@@ -1,95 +1,113 @@
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const https = require('https');
 const path = require('path');
+require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
-app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
-// Location names
-const locations = {
-  'muskoka': 'Muskoka Region',
-  'niagara': 'Niagara-on-the-Lake',
-  'blue-mountains': 'Blue Mountains',
-  'pec': 'Prince Edward County',
-  'collingwood': 'Collingwood',
-  'st-jacobs': 'St. Jacobs',
-  'tobermory': 'Tobermory',
-  'gananoque': 'Gananoque',
-  'grand-bend': 'Grand Bend',
-  'stratford': 'Stratford',
-  'elora': 'Elora',
-  'amherstburg': 'Amherstburg',
-  'perth': 'Perth',
-  'bayfield': 'Bayfield',
-  'picton': 'Picton'
-};
-
-// Business types
-const types = {
-  'bike-shop': 'Independent bike shop',
-  'hotel': 'Small-mid hotel chain',
-  'tour-operator': 'Adventure/tour operator',
-  'marina': 'Marina/boat rental',
-  'campground': 'Campground/glamping',
-  'restaurant': 'Restaurant/café',
-  'attraction': 'Attraction/heritage site',
-  'other': 'Other'
-};
-
-// Save interview
-app.post('/api/interviews', async (req, res) => {
-  try {
-    const data = req.body;
-    
-    if (!data.businessName || !data.businessType || !data.location) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
-    const locationLabel = locations[data.location] || data.location;
-    const typeLabel = types[data.businessType] || data.businessType;
-    const painPoints = Array.isArray(data.painPoints) ? data.painPoints.join(', ') : (data.painPoints || 'Not specified');
-
-    // Send Discord webhook
-    if (process.env.DISCORD_WEBHOOK_URL) {
-      const msg = {
-        content: `🎯 **New Interview: ${data.businessName}**`,
-        embeds: [{
-          title: data.businessName,
-          description: `${typeLabel} | ${locationLabel}`,
-          color: 2563371,
-          fields: [
-            { name: 'Contact', value: `${data.contactName || '—'} | ${data.contactEmail || '—'}`, inline: false },
-            { name: 'Interest Score', value: `${data.interestScore || '—'}/10`, inline: true },
-            { name: 'Pilot', value: data.pilot || '—', inline: true },
-            { name: 'Pricing', value: data.pricingModel || '—', inline: true },
-            { name: 'Pain Points', value: painPoints, inline: false },
-            { name: 'Notes', value: data.generalNotes || '—', inline: false }
-          ],
-          timestamp: new Date().toISOString()
-        }]
-      };
-
-      await fetch(process.env.DISCORD_WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(msg)
-      });
-    }
-
-    return res.json({ success: true, message: 'Interview saved', id: data.id });
-  } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ success: false, message: error.message });
-  }
-});
-
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK' });
+  res.json({ status: 'ok', webhook: DISCORD_WEBHOOK_URL ? 'configured' : 'missing' });
+});
+
+// Interview form submission
+app.post('/api/interviews', (req, res) => {
+  const {
+    businessName,
+    businessType,
+    location,
+    contactName,
+    contactPhone,
+    currentRentals,
+    guestUsagePercent,
+    managementMethod,
+    painPoints,
+    interestLevel,
+    pricingPreference,
+    pilotWillingness,
+    notes
+  } = req.body;
+
+  console.log('📝 Interview received:', businessName);
+
+  if (!DISCORD_WEBHOOK_URL) {
+    console.error('❌ DISCORD_WEBHOOK_URL not set in environment variables');
+    return res.status(500).json({ error: 'Webhook not configured' });
+  }
+
+  // Build Discord embed
+  const embed = {
+    title: `🎯 New Partner Interview: ${businessName}`,
+    color: 5814783, // Teal
+    fields: [
+      { name: 'Business Type', value: businessType || 'N/A', inline: true },
+      { name: 'Location', value: location || 'N/A', inline: true },
+      { name: 'Contact Name', value: contactName || 'N/A', inline: true },
+      { name: 'Contact Phone', value: contactPhone || 'N/A', inline: true },
+      { name: 'Current Rentals', value: currentRentals || 'N/A', inline: true },
+      { name: 'Guest Usage %', value: guestUsagePercent || 'N/A', inline: true },
+      { name: 'Management Method', value: managementMethod || 'N/A', inline: false },
+      { name: '⚡ Pain Points', value: painPoints || 'None mentioned', inline: false },
+      { name: '📊 Interest Level', value: `${interestLevel}/10`, inline: true },
+      { name: '💰 Pricing Preference', value: pricingPreference || 'N/A', inline: true },
+      { name: '🚀 Pilot Willing', value: pilotWillingness || 'N/A', inline: true },
+      { name: '📝 Notes', value: notes || 'None', inline: false }
+    ],
+    timestamp: new Date().toISOString(),
+    footer: { text: 'Ontario Tourism Partner Validation' }
+  };
+
+  const payload = JSON.stringify({ embeds: [embed] });
+
+  // Parse webhook URL
+  const url = new URL(DISCORD_WEBHOOK_URL);
+  const options = {
+    hostname: url.hostname,
+    path: url.pathname + url.search,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(payload)
+    }
+  };
+
+  // Send to Discord
+  const req = https.request(options, (discordRes) => {
+    let data = '';
+    discordRes.on('data', (chunk) => { data += chunk; });
+    discordRes.on('end', () => {
+      if (discordRes.statusCode === 204) {
+        console.log('✅ Discord webhook sent successfully');
+        res.json({
+          success: true,
+          message: `Interview for "${businessName}" saved successfully!`,
+          discordStatus: 'sent'
+        });
+      } else {
+        console.error(`❌ Discord error (${discordRes.statusCode}):`, data);
+        res.status(500).json({
+          success: false,
+          error: `Discord webhook failed: ${discordRes.statusCode}`
+        });
+      }
+    });
+  });
+
+  req.on('error', (error) => {
+    console.error('❌ Webhook request error:', error.message);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  });
+
+  req.write(payload);
+  req.end();
 });
 
 // Serve form
@@ -97,7 +115,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✓ Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📋 Form: http://localhost:${PORT}`);
+  console.log(`🔗 Discord webhook: ${DISCORD_WEBHOOK_URL ? '✅ configured' : '❌ missing'}`);
 });
