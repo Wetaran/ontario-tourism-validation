@@ -194,30 +194,62 @@ app.post('/api/interviews', async (req, res) => {
       </div>
     `;
 
-    // Send email
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.RECIPIENT_EMAIL || 'pranav@wetaran.com',
-      subject: `[Ontario Tourism] New Partner Interview: ${data.businessName} (${locationLabel})`,
-      html: emailHTML
-    };
+    // Send to Discord
+const discordMessage = {
+  content: `🎯 **New Partner Interview Submitted**`,
+  embeds: [{
+    title: data.businessName,
+    color: 2563371, // blue
+    fields: [
+      {
+        name: 'Business Type',
+        value: businessTypeLabel,
+        inline: true
+      },
+      {
+        name: 'Location',
+        value: locationLabel,
+        inline: true
+      },
+      {
+        name: 'Interest Score',
+        value: `${data.interestScore}/10`,
+        inline: true
+      },
+      {
+        name: 'Pilot Interest',
+        value: data.pilot || '—',
+        inline: true
+      },
+      {
+        name: 'Pricing Model',
+        value: data.pricingModel || '—',
+        inline: true
+      },
+      {
+        name: 'Pain Points',
+        value: painPoints,
+        inline: false
+      },
+      {
+        name: 'General Notes',
+        value: data.generalNotes || '—',
+        inline: false
+      }
+    ],
+    timestamp: new Date().toISOString()
+  }]
+};
 
-    await transporter.sendMail(mailOptions);
-
-    return res.json({ 
-      success: true, 
-      message: 'Interview saved and email sent',
-      id: data.id
-    });
-
-  } catch (error) {
-    console.error('Error processing interview:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Error saving interview: ' + error.message 
-    });
-  }
+const response = await fetch(process.env.DISCORD_WEBHOOK_URL, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(discordMessage)
 });
+
+if (!response.ok) {
+  throw new Error(`Discord webhook failed: ${response.statusText}`);
+}
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
