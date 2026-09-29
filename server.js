@@ -16,13 +16,27 @@ app.get('/', (req, res) => {
 });
 
 // Email configuration
-const transporter = nodemailer.createTransport({
-  service: process.env.EMAIL_SERVICE || 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  }
-});
+let transporter;
+
+if (process.env.EMAIL_SERVICE === 'SendGrid') {
+  transporter = nodemailer.createTransport({
+    host: 'smtp.sendgrid.net',
+    port: 587,
+    auth: {
+      user: 'apikey',
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+} else {
+  // Gmail
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD
+    }
+  });
+}
 
 // Location mapping for readable output
 const locationMap = {
