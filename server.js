@@ -77,7 +77,7 @@ app.post('/api/interviews', (req, res) => {
   };
 
   // Send to Discord
-  const req = https.request(options, (discordRes) => {
+  const httpsReq = https.request(options, (discordRes) => {
     let data = '';
     discordRes.on('data', (chunk) => { data += chunk; });
     discordRes.on('end', () => {
@@ -98,7 +98,7 @@ app.post('/api/interviews', (req, res) => {
     });
   });
 
-  req.on('error', (error) => {
+  httpsReq.on('error', (error) => {
     console.error('❌ Webhook request error:', error.message);
     res.status(500).json({
       success: false,
@@ -106,8 +106,8 @@ app.post('/api/interviews', (req, res) => {
     });
   });
 
-  req.write(payload);
-  req.end();
+  httpsReq.write(payload);
+  httpsReq.end();
 });
 
 // Serve form
