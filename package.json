@@ -1,0 +1,29 @@
+{
+  "name": "ontario-tourism-partner-validation",
+  "version": "1.0.0",
+  "description": "Phase 1 Partner Validation platform for Ontario Tourism Mobility Platform",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "tourism",
+    "validation",
+    "form"
+  ],
+  "author": "Pranav",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

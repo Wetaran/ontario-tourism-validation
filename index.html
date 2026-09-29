@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 1: Partner Validation - Ontario Tourism Mobility Platform</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+        }
+
+        .page-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            background: #ffffff;
+            min-height: 100vh;
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .form-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .form-header p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .section-counter {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 1.5rem 0;
+            color: #1a1a1a;
+            border-bottom: 2px solid #2563eb;
+            padding-bottom: 0.75rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #1a1a1a;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 14px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a1a1a;
+            font-family: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .radio-item,
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-top: 0.25rem;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #2563eb;
+        }
+
+        .radio-item label,
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .scale-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .scale-btn {
+            padding: 0.75rem;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .scale-btn:hover {
+            border-color: #2563eb;
+            background: #f0f7ff;
+        }
+
+        .scale-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        button.primary {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+
+        button.primary:hover:not(:disabled) {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .summary-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            background: #fffbf0;
+            display: none;
+        }
+
+        .summary-section.visible {
+            display: block;
+        }
+
+        .summary-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            color: #1a1a1a;
+        }
+
+        .summary-item {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            font-size: 13px;
+            color: #dc2626;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #166534;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert.loading {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            color: #1e40af;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: -2px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 1rem;
+            }
+
+            .form-header h1 {
+                font-size: 22px;
+            }
+
+            .form-section {
+                padding: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .scale-container {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .scale-btn {
+                padding: 0.5rem;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="form-header">
+            <h1>Phase 1: Partner Validation</h1>
+            <p>Ontario Tourism Mobility Platform — Interview tracker</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <form id="validationForm">
+            <!-- Partner Info Section -->
+            <div class="form-section">
+                <div class="section-counter">Section 1 of 5</div>
+                <div class="section-title">Partner Information</div>
+                
+                <div class="form-group">
+                    <label for="businessName">Business name *</label>
+                    <input type="text" id="businessName" name="businessName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessType">Type of business *</label>
+                    <select id="businessType" name="businessType" required>
+                        <option value="">Select...</option>
+                        <option value="bike-shop">Independent bike shop</option>
+                        <option value="hotel">Small-mid hotel chain</option>
+                        <option value="tour-operator">Adventure/tour operator</option>
+                        <option value="marina">Marina/boat rental</option>
+                        <option value="campground">Campground/glamping</option>
+                        <option value="restaurant">Restaurant/café</option>
+                        <option value="attraction">Attraction/heritage site</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <select id="location" name="location" required>
+                        <option value="">Select...</option>
+                        <option value="muskoka">Muskoka Region</option>
+                        <option value="niagara">Niagara-on-the-Lake</option>
+                        <option value="blue-mountains">Blue Mountains</option>
+                        <option value="pec">Prince Edward County</option>
+                        <option value="collingwood">Collingwood</option>
+                        <option value="st-jacobs">St. Jacobs</option>
+                        <option value="tobermory">Tobermory</option>
+                        <option value="gananoque">Gananoque</option>
+                        <option value="grand-bend">Grand Bend</option>
+                        <option value="stratford">Stratford</option>
+                        <option value="elora">Elora</option>
+                        <option value="amherstburg">Amherstburg</option>
+                        <option value="perth">Perth</option>
+                        <option value="bayfield">Bayfield</option>
+                        <option value="picton">Picton</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactName">Contact person name</label>
+                    <input type="text" id="contactName" name="contactName">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactEmail">Email</label>
+                    <input type="email" id="contactEmail" name="contactEmail">
+                </div>
+
+                <div class="form-group">
+                    <label for="contactPhone">Phone</label>
+                    <input type="tel" id="contactPhone" name="contactPhone">
+                </div>
+            </div>
+
+            <!-- Current State Section -->
+            <div class="form-section">
+                <div class="section-counter">Section 2 of 5</div>
+                <div class="section-title">Current State</div>
+                
+                <div class="form-group">
+                    <label>Does your business currently offer bike rentals?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="bikeRental_yes" name="bikeRental" value="yes">
+                            <label for="bikeRental_yes">Yes</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="bikeRental_no" name="bikeRental" value="no">
+                            <label for="bikeRental_no">No, but interested</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="bikeRental_unsure" name="bikeRental" value="unsure">
+                            <label for="bikeRental_unsure">Not really</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="percentageGuests">~What % of your guests use bikes? (if applicable)</label>
+                    <input type="text" id="percentageGuests" name="percentageGuests" placeholder="e.g., 15-20%">
+                </div>
+
+                <div class="form-group">
+                    <label for="currentOps">How do you currently handle rentals? (who manages it, third party, etc.)</label>
+                    <textarea id="currentOps" name="currentOps" placeholder="e.g., We partner with XYZ bike shop, in-house staff, contractor..."></textarea>
+                </div>
+            </div>
+
+            <!-- Pain Points Section -->
+            <div class="form-section">
+                <div class="section-counter">Section 3 of 5</div>
+                <div class="section-title">Pain Points & Challenges</div>
+                
+                <div class="form-group">
+                    <label>What's hardest about running bike rentals right now?</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_maintenance" name="painPoints" value="maintenance">
+                            <label for="pain_maintenance">Maintenance & fleet upkeep</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_storage" name="painPoints" value="storage">
+                            <label for="pain_storage">Storage & logistics</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_demand" name="painPoints" value="demand">
+                            <label for="pain_demand">Forecasting demand (seasonal, daily)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_staff" name="painPoints" value="staff">
+                            <label for="pain_staff">Staffing & operations</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_marketing" name="painPoints" value="marketing">
+                            <label for="pain_marketing">Customer acquisition & marketing</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="pain_other" name="painPoints" value="other">
+                            <label for="pain_other">Other</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="painDetail">If one thing could change, what would it be?</label>
+                    <textarea id="painDetail" name="painDetail" placeholder="Describe their biggest pain..."></textarea>
+                </div>
+            </div>
+
+            <!-- Model Interest Section -->
+            <div class="form-section">
+                <div class="section-counter">Section 4 of 5</div>
+                <div class="section-title">Platform Interest & Willingness</div>
+                
+                <div class="form-group">
+                    <label>How interested are they in this model? (We provide bikes + software + training, they manage operations)</label>
+                    <div class="scale-container" id="scaleContainer"></div>
+                    <input type="hidden" id="interestScore" name="interestScore">
+                </div>
+
+                <div class="form-group">
+                    <label for="pricingModel">What pricing model would they prefer?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="pricing_revenue" name="pricingModel" value="revenue-share">
+                            <label for="pricing_revenue">Revenue share (% of rentals)</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="pricing_monthly" name="pricingModel" value="monthly-fee">
+                            <label for="pricing_monthly">Flat monthly fee</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="pricing_hybrid" name="pricingModel" value="hybrid">
+                            <label for="pricing_hybrid">Hybrid (fee + share)</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="pricing_unsure" name="pricingModel" value="unsure">
+                            <label for="pricing_unsure">They're unsure</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="pricingPercent">What % or price point would be acceptable to them?</label>
+                    <input type="text" id="pricingPercent" name="pricingPercent" placeholder="e.g., 15-20% revenue share, $500/month">
+                </div>
+
+                <div class="form-group">
+                    <label>Would they be willing to pilot this?</label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="pilot_yes" name="pilot" value="yes">
+                            <label for="pilot_yes">Yes, definitely</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="pilot_maybe" name="pilot" value="maybe">
+                            <label for="pilot_maybe">Maybe — needs more info</label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="pilot_no" name="pilot" value="no">
+                            <label for="pilot_no">No, not interested</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes & Summary Section -->
+            <div class="form-section">
+                <div class="section-counter">Section 5 of 5</div>
+                <div class="section-title">Notes & Summary</div>
+                
+                <div class="form-group">
+                    <label for="keyFeatures">What features matter most to them?</label>
+                    <textarea id="keyFeatures" name="keyFeatures" placeholder="e.g., customer acquisition, ease of operations, financing..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="generalNotes">General notes from the visit/call</label>
+                    <textarea id="generalNotes" name="generalNotes" placeholder="Any other observations, concerns, opportunities..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="followUpAction">Next steps / follow-up action</label>
+                    <textarea id="followUpAction" name="followUpAction" placeholder="e.g., Send pricing deck, schedule follow-up call, get intro to owner..."></textarea>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button type="button" onclick="clearForm()">Clear all</button>
+                <button type="button" class="primary" id="submitBtn" onclick="saveForm()">Save interview</button>
+            </div>
+
+            <!-- Summary Display -->
+            <div class="summary-section" id="summaryDisplay">
+                <h3>✓ Interview saved</h3>
+                <div class="summary-item">
+                    <strong id="summaryName"></strong> (<span id="summaryType"></span>, <span id="summaryLocation"></span>)
+                </div>
+                <div class="summary-item" style="margin-top: 1rem;">
+                    <strong>Interest score:</strong> <span id="summarySummaryScore"></span>/10<br>
+                    <strong>Pilot interest:</strong> <span id="summaryPilot"></span><br>
+                    <strong>Pricing model:</strong> <span id="summaryPricing"></span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('validationForm');
+        const scaleContainer = document.getElementById('scaleContainer');
+        const interestScoreInput = document.getElementById('interestScore');
+        const summaryDisplay = document.getElementById('summaryDisplay');
+        const alertContainer = document.getElementById('alertContainer');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Generate scale buttons 1-10
+        for (let i = 1; i <= 10; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'scale-btn';
+            btn.textContent = i;
+            btn.dataset.scale = i;
+            btn.onclick = (e) => selectScale(e, i);
+            scaleContainer.appendChild(btn);
+        }
+
+        function selectScale(e, value) {
+            e.preventDefault();
+            const buttons = document.querySelectorAll('.scale-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            interestScoreInput.value = value;
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert ${type} show`;
+            
+            if (type === 'loading') {
+                alert.innerHTML = `<span class="spinner"></span>${message}`;
+            } else {
+                alert.textContent = message;
+            }
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            
+            if (type !== 'loading') {
+                setTimeout(() => alert.remove(), 5000);
+            }
+            
+            return alert;
+        }
+
+        async function saveForm() {
+            if (!form.checkValidity()) {
+                showAlert('Please fill in all required fields (marked with *)', 'error');
+                return;
+            }
+
+            if (!interestScoreInput.value) {
+                showAlert('Please rate their interest (1-10)', 'error');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                showAlert('Saving interview...', 'loading');
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+                data.id = Date.now();
+                data.timestamp = new Date().toISOString();
+
+                const response = await fetch('/api/interviews', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Failed to save interview');
+                }
+
+                // Get location and business type labels
+                const locationSelect = document.getElementById('location');
+                const locationLabel = locationSelect.options[locationSelect.selectedIndex].text;
+                const typeSelect = document.getElementById('businessType');
+                const typeLabel = typeSelect.options[typeSelect.selectedIndex].text;
+
+                // Show summary
+                document.getElementById('summaryName').textContent = data.businessName;
+                document.getElementById('summaryType').textContent = typeLabel;
+                document.getElementById('summaryLocation').textContent = locationLabel;
+                document.getElementById('summarySummaryScore').textContent = data.interestScore;
+                document.getElementById('summaryPilot').textContent = data.pilot || '—';
+                document.getElementById('summaryPricing').textContent = data.pricingModel || '—';
+                
+                summaryDisplay.classList.add('visible');
+
+                showAlert(`✓ Interview for "${data.businessName}" saved successfully! Email sent to pranav@wetaran.com`, 'success');
+
+                // Scroll to summary
+                setTimeout(() => {
+                    summaryDisplay.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 500);
+
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    form.reset();
+                    const buttons = document.querySelectorAll('.scale-btn');
+                    buttons.forEach(b => b.classList.remove('active'));
+                    summaryDisplay.classList.remove('visible');
+                    submitBtn.disabled = false;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 3000);
+
+            } catch (error) {
+                submitBtn.disabled = false;
+                showAlert('Error: ' + error.message, 'error');
+                console.error('Save error:', error);
+            }
+        }
+
+        function clearForm() {
+            if (confirm('Clear all fields?')) {
+                form.reset();
+                const buttons = document.querySelectorAll('.scale-btn');
+                buttons.forEach(b => b.classList.remove('active'));
+                summaryDisplay.classList.remove('visible');
+                alertContainer.innerHTML = '';
+            }
+        }
+    </script>
+</body>
+</html>
